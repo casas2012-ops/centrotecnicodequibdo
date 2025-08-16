@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Verificación de Cédulas – Diplomas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #0b1220, #1e3a8a);
+      color: #e6eef8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+    }
+    header img {
+      max-width: 500px; /* Logo grande */
+      height: auto;
+    }
+    header h2 {
+      margin-top: 15px;
+      font-size: 28px;
+      font-weight: bold;
+      color: #ffffff;
+    }
+    .container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      background: rgba(17, 26, 43, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      width: 350px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+    h1 { margin-top: 0; text-align: center; }
+    input, button {
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+    }
+    input {
+      flex: 1;
+      background: #0d1729;
+      color: white;
+      border: 1px solid #2a3f60;
+    }
+    button {
+      background: #3b82f6;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .row { display: flex; gap: 8px; margin-top: 10px; }
+    .result {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 6px;
+    }
+    .ok {
+      background: #06361f;
+      border: 1px solid #1ea45a;
+      color: #d4f7e3;
+    }
+    .bad {
+      background: #3a0d12;
+      border: 1px solid #d33b43;
+      color: #ffd9db;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>Centro Técnico de Quibdó</h2>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <h1>Verificar Diploma</h1>
+      <p>Ingrese el número de cédula:</p>
+      <div class="row">
+        <input id="cedula" placeholder="Ej: 12345678" />
+        <button id="btn">Verificar</button>
+      </div>
+      <div id="res" class="result" style="display:none;"></div>
+    </div>
+  </div>
+
+  <script>
+    const DIPLOMAS = [
+      { cedula: "12345678", nombre: "Juan Pérez", programa: "Tecnico Auxiliar de Enfermeria", fecha: "15/06/2023" },
+      { cedula: "87654321", nombre: "María Gómez", programa: "Tecnico Auxiliar de Enfermeria", fecha: "20/07/2022" },
+      { cedula: "11223344", nombre: "Carlos Rodríguez", programa: "Tecnico Auxiliar de Enfermeria", fecha: "10/12/2021" }
+    ];
+
+    function normalizar(cedula) {
+      return cedula.replace(/[^\d]/g, "").replace(/^0+/, "");
+    }
+
+    function verificar(cedula) {
+      const cedNorm = normalizar(cedula);
+      const persona = DIPLOMAS.find(d => normalizar(d.cedula) === cedNorm);
+      const res = document.getElementById("res");
+      res.style.display = "block";
+
+      if (persona) {
+        res.className = "result ok";
+        res.innerHTML = `✅ Diploma válido<br>
+          <strong>Nombre:</strong> ${persona.nombre}<br>
+          <strong>Cédula:</strong> ${persona.cedula}<br>
+          <strong>Programa:</strong> ${persona.programa}<br>
+          <strong>Fecha de grado:</strong> ${persona.fecha}`;
+      } else {
+        res.className = "result bad";
+        res.textContent = `❌ Diploma inválido – Cédula ${cedula}`;
+      }
+    }
+
+    document.getElementById("btn").addEventListener("click", () => {
+      const ced = document.getElementById("cedula").value.trim();
+      verificar(ced);
+    });
+
+    document.getElementById("cedula").addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        verificar(e.target.value.trim());
+      }
+    });
+
+    const params = new URLSearchParams(location.search);
+    const cedulaURL = params.get("cedula");
+    if (cedulaURL) {
+      document.getElementById("cedula").value = cedulaURL;
+      verificar(cedulaURL);
+    }
+  </script>
+</body>
+</html>
